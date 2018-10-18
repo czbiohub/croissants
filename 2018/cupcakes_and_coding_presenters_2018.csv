@@ -1,67 +1,67 @@
-date,presenter,github_username,topic
-2018-05-29,Ashley Maynard,AMaynard10,Git/GitHub tutorial
-2018-06-05,Giana Cirolia,gianatcirolia,"Combining 96-well plates into tall, tidy datasets"
-2018-06-12,Bing Wu,bingwu2017,Launching AWS instances with aegea
-2018-06-19,Eric Waltari,ewaltari,Using the `github.com/czbiohub/utilities` tools to align and count RNA-seq data
-2018-06-26,Vedran Hadziosmanovic,Vedranh13,Introduction to deep learning
-2018-07-03,Amy Kistler,amykczb,Basic introduction to de novo sequence assembly of genomes or transcripts from NGS data
-2018-07-10,John Pak,pakjohn1,"A beginners guide to protein visualization using PyMOL, a versatile and open-source molecular graphics environment"
-2018-07-17,Michelle Tan,themichelletan,Automatically generating sample sheets for sequencing with R
-2018-07-24,Sam Hao,samlhao,Aligning reads using bowtie2 on AWS
-2018-07-31,Renuka Kumar,renukakumar,Finding restriction enzyme cut sites with regular expressions
-2018-08-07,Gerry Meixiong,gmeixiong,Simplifying Bioinformatics Pipelines with Reflow
-2018-08-14,Rene Sit,renesit,Automating FACS plots using R and ggplot2
-2018-08-21,Kalani Ratnasiri,kalanir,Introduction to methods of quality controlling raw sequencing reads
-2018-08-28,Amy Lyden,alyden,Preparing gene counts and metadata for DESeq2 gene expression analysis
-2018-09-04,Jason Li,Jathrone,"Amplicon-Seq Readmapping —an adventure with blast, bedtools, and jupyter"
-2018-09-11,Saharai Caldera,saharai,Converting dataframes to 384 and 96-well plate maps for NGS library processing
-2018-09-18,Hera Canaj,hcanaj,Quilting images into well-plate format using PIL- Python image processing
-2018-09-25,Cancelled,NA,Beyond the Cell Atlas Conference
-2018-10-02,Lincoln Harris,lincoln-harris,Using RStudio through AWS
-2018-10-09,Olga Botvinnik,olgabot,"All my tricks: Read/write csvs directly to/from AWS, submit 100s of compute jobs, make hover-able figures and overall be a computer wizard"
-2018-10-16,Angela Pisco,aopisco,How to be an Adobe Illustrator wizard
-2018-10-23,David Yllanes,,
-2018-10-30,Ashley Maynard,,
-2018-11-06,James Webber,,
-2018-11-13,Lucy Li,,
-2018-11-20,NA,NA,Thanksgiving Week
-2018-11-27,Sabera Talukder,,
-2018-12-04,Calla Martyn,,
-2018-12-11,Giana Cirolia,,
-2018-12-18,NA,NA,Winter Holiday
-2018-12-25,NA,NA,Winter Holiday
-2019-01-01,NA,NA,Winter Holiday
-2019-01-08,Sabera Talukder,,
-2019-01-15,Calla Martyn,,
-2019-01-22,Giana Cirolia,,
-2019-01-29,John Pak,,
-2019-02-05,Prashanth Ramachandran,,
-2019-02-12,Emily Crawford,,
-2019-02-19,Carly Cheung,,
-2019-02-26,Amy Lyden,,
-2019-03-05,Maira  Phelps,,
-2019-03-12,Rene Sit,,
-2019-03-19,Saharai Caldera,,
-2019-03-26,David Dynerman,,
-2019-04-02,Jack Kamm,,
-2019-04-09,Bing Wu,,
-2019-04-16,Eric Waltari,,
-2019-04-23,Kalani Ratnasiri,,
-2019-04-30,Michelle Tan,,
-2019-05-07,Hera Canaj,,
-2019-05-14,Amy Kistler,,
-2019-05-21,Bryant Chhun,,
-2019-05-28,Lincoln Harris,,
-2019-06-04,Greg Huber,,
-2019-06-11,,,
-2019-06-18,,,
-2019-06-25,,,
-2019-07-02,,,
-2019-07-09,,,
-2019-07-16,,,
-2019-07-23,,,
-2019-07-30,,,
-2019-08-06,,,
-2019-08-13,,,
-2019-08-20,,,
-2019-08-27,,,
+date,presenter,github_username,topic,Notes
+2018-05-29,Ashley Maynard,AMaynard10,Git/GitHub tutorial,
+2018-06-05,Giana Cirolia,gianatcirolia,"Combining 96-well plates into tall, tidy datasets",
+2018-06-12,Bing Wu,bingwu2017,Launching AWS instances with aegea,
+2018-06-19,Eric Waltari,ewaltari,Using the `github.com/czbiohub/utilities` tools to align and count RNA-seq data,
+2018-06-26,Vedran Hadziosmanovic,Vedranh13,Introduction to deep learning,
+2018-07-03,Amy Kistler,amykczb,Basic introduction to de novo sequence assembly of genomes or transcripts from NGS data,
+2018-07-10,John Pak,pakjohn1,"A beginners guide to protein visualization using PyMOL, a versatile and open-source molecular graphics environment",
+2018-07-17,Michelle Tan,themichelletan,Automatically generating sample sheets for sequencing with R,
+2018-07-24,Sam Hao,samlhao,Aligning reads using bowtie2 on AWS,
+2018-07-31,Renuka Kumar,renukakumar,Finding restriction enzyme cut sites with regular expressions,
+2018-08-07,Gerry Meixiong,gmeixiong,Simplifying Bioinformatics Pipelines with Reflow,
+2018-08-14,Rene Sit,renesit,Automating FACS plots using R and ggplot2,
+2018-08-21,Kalani Ratnasiri,kalanir,Introduction to methods of quality controlling raw sequencing reads,
+2018-08-28,Amy Lyden,alyden,Preparing gene counts and metadata for DESeq2 gene expression analysis,
+2018-09-04,Jason Li,Jathrone,"Amplicon-Seq Readmapping —an adventure with blast, bedtools, and jupyter",
+2018-09-11,Saharai Caldera,saharai,Converting dataframes to 384 and 96-well plate maps for NGS library processing,
+2018-09-18,Hera Canaj,hcanaj,Quilting images into well-plate format using PIL- Python image processing,
+2018-09-25,NA,NA,Beyond the Cell Atlas Conference,
+2018-10-02,Lincoln Harris,lincoln-harris,Using RStudio through AWS,
+2018-10-09,Olga Botvinnik,olgabot,"How to be a bioinformagician, part 1",
+2018-10-16,Olga Botvinnik,olgabot,"How to be a bioinformagician, part 2",
+2018-10-23,Angela Pisco,aopisco,How to be an Adobe Illustrator wizard,
+2018-10-30,David Yllanes,,,
+2018-11-06,Lincoln Harris,lincoln-harris,,
+2018-11-13,NA,NA,maybe brian yu?,Olga is OOT
+2018-11-20,NA,NA,Thanksgiving Week,Olga is OOT
+2018-11-27,Lucy Li,lucymli,,
+2018-12-04,Giana Cirolia,,,
+2018-12-11,John Pak,,,
+2018-12-18,NA,NA,Winter Holiday,People probably won't be here
+2018-12-25,NA,NA,Winter Holiday,Olga is OOT
+2019-01-01,NA,NA,Winter Holiday,Olga is OOT
+2019-01-08,NA,NA,,Olga is OOT
+2019-01-15,James Webber,jamestwebber,,
+2019-01-22,Prashanth Ramachandran,,,
+2019-01-29,Emily Crawford,,,
+2019-02-05,Carly Cheung,,,
+2019-02-12,Amy Lyden,,,
+2019-02-19,Maira  Phelps,,,
+2019-02-26,Rene Sit,,,
+2019-03-05,Saharai Caldera,,,
+2019-03-12,David Dynerman,,,
+2019-03-19,Jack Kamm,,,
+2019-03-26,Bing Wu,,,
+2019-04-02,Eric Waltari,,,
+2019-04-09,Kalani Ratnasiri,,,
+2019-04-16,Michelle Tan,,,
+2019-04-23,Hera Canaj,,,
+2019-04-30,Amy Kistler,,,
+2019-05-07,Bryant Chhun,,,
+2019-05-14,Greg Huber,,,
+2019-05-21,,,,
+2019-05-28,,,,
+2019-06-04,,,,
+2019-06-11,,,,
+2019-06-18,,,,
+2019-06-25,,,,
+2019-07-02,,,,
+2019-07-09,,,,
+2019-07-16,,,,
+2019-07-23,,,,
+2019-07-30,,,,
+2019-08-06,,,,
+2019-08-13,,,,
+2019-08-20,,,,
+2019-08-27,,,,

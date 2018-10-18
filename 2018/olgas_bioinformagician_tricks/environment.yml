@@ -208,6 +208,7 @@ dependencies:
   - six
   - sqlite
   - tk
+  - tqdm
   - urllib3
   - wheel
   - xz
