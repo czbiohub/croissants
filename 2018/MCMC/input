@@ -1,0 +1,11 @@
+./results-hb32    Directory where the output data will be written
+1000                    Number of measurements per file
+100                     Frequency of measurements
+1000                    Number of data file to be generated
+0                       Next file to be produced
+100                     Number of thermalization steps
+0                       Starting configuration 0(random), 1(cold), 2(backup)
+32                       Lx                      
+32                       Ly
+0.44068679350977151261  Coupling (also called beta) for the simulation
+

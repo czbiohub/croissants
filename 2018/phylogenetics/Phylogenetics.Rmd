@@ -1,0 +1,252 @@
+---
+title: "Phylogeny building and visualization"
+author: "Lucy Li"
+date: "Nov 27, 2018"
+output: 
+  html_document:
+    keep_md: true
+    number_sections: true
+    fig_caption: yes
+    toc: true
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo=TRUE, fig.path="figs/", rows.print=10)
+```
+
+In this tutorial we will create the phylogeny for a set of 50 publically available chikungunya virus genomes and visualize the phylogeny in R. 
+
+First install the necessary libraries:
+
+```{r libraries, warning=FALSE, message=FALSE}
+required_libraries <- c("phangorn", "ape", "magrittr", "dplyr", "lubridate", "ggplot2", "ggtree", "countrycode", "knitr", "devtools")
+missing_libraries <- required_libraries[!(required_libraries %in% installed.packages())]
+if (length(missing_libraries) > 0) sapply(missing_libraries, install.packages)
+invisible(lapply(required_libraries, library, character.only=TRUE))
+devtools::install_github("lucymli/EpiGenR")
+```
+
+Also install the following programs:
+
+- [muscle v 3.8.31](https://www.drive5.com/muscle) - for multi-sequence alignment (also available via Anacona: conda install muscle)
+- [RAxML-NG v0.7.0](https://github.com/amkozlov/raxml-ng/releases) - for maximum likelihood
+
+# Phylogeny building
+
+## Alignment-based phylogenies
+
+### Create multi-sequence alignment
+
+The Chikungunya virus genomes is around 12kb and only encodes 2 polyproteins, which means it is relatively easy to assemble the complete genome and create a multi-sequence alignment. For bacterial genomes, short reads are mapped against a reference genome and only polymorphic sites (SNPs) are included in the alignment.
+
+Run the following commands to align the sequences in 'sequences.fasta'. The alignment might take a couple of minutes.
+
+```{bash, cache=TRUE}
+muscle3.8.31_i86darwin64 -maxiters 1 -diags -in sequences.fasta -out aln.fasta
+```
+
+### Use model test to determine best fitting nucleotide substitution model
+
+A list of such models is here available here: http://evomics.org/resources/substitution-models/nucleotide-substitution-models/
+
+Essentially these models make different assumptions about the base frequencies, the differences in transition and transversion rates, and heterogeneity in the rate of substitution across the genome.
+
+You can use ModelTest to select the best model for your data. The best model is selected based on [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) (Akaike Information Criterion) or [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion) (Bayesian Information Criterion) scores, which take into account both the likelihood (how well does your model explain your data) and the complexity of the model. Ideally you want the simplest model that best explains your data.
+
+The ModelTest program is available as a [GUI](https://github.com/ddarriba/jmodeltest2) and as a more efficient [commandline tool](https://github.com/ddarriba/modeltest). For this tutorial we'll use the R function that implements ModelTest. The following commands should take about a minute to run.
+
+```{r ModelTest, cache=TRUE}
+modeltest_results <- 
+  ape::read.FASTA("aln.fasta") %>%
+  phangorn::phyDat() %>%
+  phangorn::modelTest(multicore=TRUE, mc.cores=4)
+```
+
+Usually it's best to pick a model that comes top according to both AIC and BIC score (small scores are better). Usually the corrected AICc score (AICc) is used as it reduces the risk of overfitting with small sample sizes. 
+
+```{r ModelTest_results1}
+arrange(modeltest_results, AICc) %>%
+  select(c(Model, df, logLik, AICc)) %>%
+  head (3)
+```
+
+```{r ModelTest_results2}
+arrange(modeltest_results, BIC) %>%
+  select(c(Model, df, logLik, BIC)) %>%
+  head (3)
+```
+
+The GTR model comes top according to both the AICc and BIC scores. In general, AIC scores have a tendency to favour more complex models whereas BIC has a tendency to favor smaller models.
+
+For downstream analysis we will use use the GTR+G+I model to build the phylogeny as it was selected as the best model according to AICc and had a similar BIC score to GTR+G according to BIC.
+
+In the GTR+G+I model, the assumptions are:
+
+- Unequal base frequencies
+- 6 different mutation rates
+- Mutation rate of A -> G = rate of G -> A, and similarly for the 5 other pairs of bases
+
+### Maximum likelihood phylogeny reconstruction using RAxML
+
+The following command can be used to construct maximum likelihood phylogeny based on the the multi-sequence alignment and the nucleotide substitution model selected above. This should take about 10s to run.
+
+```{bash raxml, cache=TRUE}
+mkdir raxml
+raxml-ng --msa aln.fasta --model GTR+G+I --prefix raxml/mltree
+```
+
+To quantify the uncertainty in tree topology, we can compute the bootstrap values of the branching points by repeating the phylogeny building step with bootstrap samples of the sequences. Let rows in the multi-sequence alignment be samples and columns be positions into the genome, then a boostrap sample involves resampling with replacement of the columns. The bootstrap value is the proportion of bootstraps containig a branching point. Ideally we want >80% bootstrap values.
+
+We will skip this step for now for the sake of time, but this is the command you can use to calculate the bootstrap values:
+
+```{bash raxml-bs, eval=FALSE}
+raxml-ng --all --msa aln.fasta --model GTR+G+I --bs-trees 200 --prefix raxml/raxmlbootstrap
+```
+
+### Bayesian approaches
+
+This won't be covered today, but Bayesian methods for phylogenetic reconstruction can provide estimates of times of divergence in addition to genetic relatedness. This can be useful for infectious diseaes analyses, e.g. when estimating the date of introduction of a new pathogen. Common tools include [BEAST](http://beast.community/) and [MrBayes](http://nbisweden.github.io/MrBayes/). However, these methods are slow as they try reconstruct a distribution of plausible trees. Practically, these methods can only be used for a few hundred pathogen sequences.
+
+## Kmer-based phylogenies
+
+An alternative to alignment-based methods is by comparing k-mers from short-read data (not covered in this session). The trees on IDseq are based on this approach.
+
+The kmer approach is useful as it is generally more parallelizeable and thus scalable.
+
+However, the phylogeny might not be as accurate.
+
+# Phylogeny visualization
+
+## Standalone software/tools
+
+- Geneious
+- FigTree
+- Dendroscope
+
+and [many more...](https://en.wikipedia.org/wiki/List_of_phylogenetic_tree_visualization_software)
+
+## Visualization in R
+
+The advantage of using R and other scripting languages to process trees is that it is reproducible. If the analysis pipeline or data changes, the visualization steps are much easier to replicate than using a GUI tool. The trees can be output as PDFs and prettified e.g. in Illustrator for final publication.
+
+The `ape` library contains a set of very useful functions for processing and manipulating trees. The `read.tree()` function reads the tree in newick format into a `phylo` object in R.
+
+### Load tree
+
+```{r load-tree-file}
+mltree <- ape::read.tree("raxml/mltree.raxml.bestTree")
+```
+
+As you can see below, the `phylo` object contains information about edges, edge lengths, number of internal nodes, tip labels, and whether the tree is rooted.
+
+```{r phylo}
+str(mltree)
+```
+
+### Rooting the phylogeny
+
+
+By default, the tree reconstructed in RAxML is unrooted. To root the tree, we need to select one or more samples as the outgroup. These samples should be sufficiently distinct from the other samples, but not too divergent that distance score cannot be computed. One way to determine the outgroup is by visualizing the tree. 
+
+`ape` provides an function to quickly visualize the tree, although the default output is not pretty.
+
+```{r mltreeplot, fig.height=10, fig.width=10}
+plot(mltree, type="unrooted", show.tip.label = TRUE)
+```
+
+As you can see, there are a couple of samples that are clearly distinct from the other samples. We can use these two as the outgroup for rooting the tree (`root()`). Usually the outgroup is removed from downstream analysis (`drop.tip()`).
+
+```{r roottree, fig.height=12, fig.width=8}
+auto_root_tree <- function (tree) {
+  longest_edge <- which.max(tree$edge.length)
+  outgroup_tips <- extract.clade(tree, tree$edge[longest_edge, 2])$tip.label
+  rooted_tree <- root(tree, outgroup_tips, resolve.root=TRUE)
+  drop.tip(rooted_tree, outgroup_tips)
+}
+rooted_mltree <- auto_root_tree(mltree)
+plot(rooted_mltree)
+```
+
+There are two distinct clusters of Chikungunya virus.
+
+For infectious disease outbreak analyses, the outgroup often comprises samples of the same species but from an earlier time period or circulating in a different part of the world.
+
+Sometimes a good outgroup does not exist, e.g. for novel pathogens or new strains of an existing pathogen. In such cases, we can use the time of collection to deduce the most likely root. We assume that the rate of substitution stays fairly constant over time within a strain, so samples taken in more recent times should have more divergence relative to the root of the tree than older samples. 
+
+We can visually check the correlation between divergence and time:
+
+```{r temporalcorrelation}
+ggplot(EpiGenR::root2tip.divergence(rooted_mltree), aes(x=time, y=divergence)) +
+  theme_bw() + 
+  geom_point()
+```
+
+This plot confirms the presence of two lineages, with seemingly different rates of substitution. This concurs with [existing literature](https://jvi.asm.org/content/84/13/6497) that shows the Asian lineage evolves twice as quickly than the ECSA lineage.
+
+### Adding metadata
+
+While the tree itself provides information regarding the genetic relatedness of samples, the more interesting questions are often in linking the relatedness to additional metadata.
+
+`ggtree` is a useful package for adding metadata to phylogenetic visualizations, although its documentation is somewhat sparse. Its usage is based on the `ggplot` grammar. 
+
+```{r ggtree, fig.height=8, fig.width=8}
+tree_plot <- ggtree(rooted_mltree) +
+  theme_tree2() 
+tree_plot
+```
+
+For this example, both the spatial and temporal information are stored in the tip label strings.
+
+```{r metadata}
+metadata <- strsplit(rooted_mltree$tip.label, "_") %>%
+  do.call(what=rbind) %>%
+  as.data.frame(., stringsAsFactors=FALSE) %>%
+  rename(., ID=V1, Country=V2, Date=V3) %>%
+  mutate(ID=rooted_mltree$tip.label, Country=factor(Country), Date=as.Date(Date))
+```
+
+Annoyingly ggtree does not automatically adjust the plot size to accommodate the tip labels, so some manual tweaking using `xlim()` might be necessary.
+
+```{r add-metadata-to-tree, fig.width=8, fig.height=8}
+tree_plot_country <- tree_plot %<+% metadata +
+  geom_tiplab(aes(color=Country)) +
+  xlim(0, 0.10)
+tree_plot_country
+```
+
+Given the number of countries in the dataset, the Continent might be a better grouping for coloring.
+
+```{r metadata-continent}
+metadata$Continent <- metadata$Country %>%
+  gsub("([a-z])([A-Z])", "\\1 \\2", .) %>%
+  gsub("Virgin Islands", "US Virgin Islands", .) %>%
+  countrycode(., origin='country.name', destination="continent")
+```
+
+
+```{r add-metadata-to-tree2, fig.width=8, fig.height=8}
+tree_plot_continent <- tree_plot %<+% metadata +
+  geom_tiplab(aes(color=Continent)) +
+  xlim(0, 0.10)
+tree_plot_continent
+```
+
+From the above plot, it's clear that the chikungunya virus outbreak in the Americas a few years ago was the result of importation from the South East Asia region.
+
+### Export plots
+
+
+```{r export}
+ggsave("tree_plot_continent.pdf", tree_plot_continent, width=8, height=8)
+```
+
+## Interactive display in javascript
+
+In addition to generating static phylogenies, there are various tools now available that enable interactivity. An example is [Nextstrain](Nextstrain
+https://nextstrain.org/) by Trevor Bedford's group at Fred Hutchinson.
+
+Also, we are developing an interactive tool here at the Biohub for tracking the spread of antimicrobial resistant bacteria in California and beyond:
+
+- https://bcrew.czbiohub.org (username: demo; password: demo)
+
+
