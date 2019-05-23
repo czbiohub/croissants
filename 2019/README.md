@@ -70,7 +70,7 @@
 
 ## 2019-05-23
 
-- **Carly Cheung**: *Lessons learned from learning python online*
+- **Carly Cheung**: *Lessons learned from learning Python online*
 
 ## 2019-05-30
 
