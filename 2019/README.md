@@ -98,7 +98,7 @@
 
 ## 2019-07-11
 
-- **Rene Sit**: *Something you spent hours figuring out this week*
+- **Gabby Shvartsman**: *Git Excited!*
 
 ## 2019-07-18
 
@@ -106,7 +106,7 @@
 
 ## 2019-07-25
 
-- **Saharai Caldera**: *Something you spent hours figuring out this week*
+- **You?**: *Something you spent hours figuring out this week*
 
 ## 2019-08-01
 
@@ -114,7 +114,7 @@
 
 ## 2019-08-08
 
-- **David Dynerman**: *Something you spent hours figuring out this week*
+- **You?**: *Something you spent hours figuring out this week*
 
 ## 2019-08-15
 
@@ -122,7 +122,7 @@
 
 ## 2019-08-22
 
-- **Jack Kamm**: *Something you spent hours figuring out this week*
+- **You?**: *Something you spent hours figuring out this week*
 
 ## 2019-08-29
 
@@ -130,15 +130,15 @@
 
 ## 2019-09-05
 
-- **Bing Wu**: *Something you spent hours figuring out this week*
+- **Maurizio Morri**: *Using Stanford compute resources*
 
 ## 2019-09-12
 
-- **Office Hours**: *Something you spent hours figuring out this week*
+- **You?**: *Something you spent hours figuring out this week*
 
 ## 2019-09-19
 
-- **Eric Waltari**: *Something you spent hours figuring out this week*
+- **Rene Sit**: *Something you spent hours figuring out this week*
 
 ## 2019-09-26
 
@@ -146,7 +146,7 @@
 
 ## 2019-10-03
 
-- **Kalani Ratnasiri**: *Something you spent hours figuring out this week*
+- **Saharai Caldera**: *Something you spent hours figuring out this week*
 
 ## 2019-10-10
 
@@ -154,7 +154,7 @@
 
 ## 2019-10-17
 
-- **Michelle Tan** ([@jamestwebber](https://github.com/jamestwebber)): *Something you spent hours figuring out this week*
+- **David Dynerman** ([@jamestwebber](https://github.com/jamestwebber)): *Something you spent hours figuring out this week*
 
 ## 2019-10-24
 
@@ -162,7 +162,7 @@
 
 ## 2019-10-31
 
-- **Hera Canaj**: *Something you spent hours figuring out this week*
+- **Jack Kamm**: *Something you spent hours figuring out this week*
 
 ## 2019-11-07
 
@@ -170,7 +170,7 @@
 
 ## 2019-11-14
 
-- **Amy Kistler**: *Something you spent hours figuring out this week*
+- **Bing Wu**: *Something you spent hours figuring out this week*
 
 ## 2019-11-21
 
@@ -178,7 +178,7 @@
 
 ## 2019-11-28
 
-- **Bryant Chhun**: *Something you spent hours figuring out this week*
+- **Eric Waltari**: *Something you spent hours figuring out this week*
 
 ## 2019-12-05
 
@@ -186,7 +186,7 @@
 
 ## 2019-12-12
 
-- **Greg Huber**: *Something you spent hours figuring out this week*
+- **Kalani Ratnasiri**: *Something you spent hours figuring out this week*
 
 ## 2019-12-19
 
@@ -194,4 +194,4 @@
 
 ## 2019-12-26
 
-- **James Webber**: *Something you spent hours figuring out this week*
+- **Michelle Tan**: *Something you spent hours figuring out this week*
