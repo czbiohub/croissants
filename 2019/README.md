@@ -118,11 +118,11 @@
 
 ## 2019-08-15
 
-- **Office Hours**: *Something you spent hours figuring out this week*
+- **Kalani Ratnasiri**: *Using Nextflow for fast and easy sequence alignment*
 
 ## 2019-08-22
 
-- **Kalani Ratnasiri**: *Bowtie + Nextflow*
+- **Andrew Chen**: *Using shallow learning methods to segment images via Ilastik*
 
 ## 2019-08-29
 
@@ -138,7 +138,7 @@
 
 ## 2019-09-19
 
-- **Rene Sit**: *Something you spent hours figuring out this week*
+- **Michelle Tan**: *Something you spent hours figuring out this week*
 
 ## 2019-09-26
 
@@ -154,7 +154,7 @@
 
 ## 2019-10-17
 
-- **David Dynerman**: *Something you spent hours figuring out this week*
+- **You?**: *Something you spent hours figuring out this week*
 
 ## 2019-10-24
 
@@ -162,7 +162,7 @@
 
 ## 2019-10-31
 
-- **Jack Kamm**: *Something you spent hours figuring out this week*
+- **David Dynerman**: *Something you spent hours figuring out this week*
 
 ## 2019-11-07
 
@@ -170,7 +170,7 @@
 
 ## 2019-11-14
 
-- **Bing Wu**: *Something you spent hours figuring out this week*
+- **Jack Kamm**: *Something you spent hours figuring out this week*
 
 ## 2019-11-21
 
@@ -178,7 +178,7 @@
 
 ## 2019-11-28
 
-- **Eric Waltari**: *Something you spent hours figuring out this week*
+- **Bing Wu**: *Something you spent hours figuring out this week*
 
 ## 2019-12-05
 
@@ -186,7 +186,7 @@
 
 ## 2019-12-12
 
-- **Hera Canaj**: *Something you spent hours figuring out this week*
+- **Eric Waltari**: *Something you spent hours figuring out this week*
 
 ## 2019-12-19
 
@@ -194,4 +194,4 @@
 
 ## 2019-12-26
 
-- **Michelle Tan**: *Something you spent hours figuring out this week*
+- **Hera Canaj**: *Something you spent hours figuring out this week*
