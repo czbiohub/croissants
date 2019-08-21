@@ -17,7 +17,7 @@
 1. Download here https://www.ilastik.org/download.html
 2. Navigate to the directory where you downloaded ilastik
 3. Extract its contents: Double click on download or run `tar xjf ilastik-1.3.2post1-OSX.tar.bz2`
-4. Run ilastik: Double click.
+4. Run ilastik: Right click and open.
 5. Start a new Pixel Classification Project. 
 ---
 ## Post-Processing
