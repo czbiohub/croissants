@@ -1,0 +1,45 @@
+name: sc-tutorial
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - python>=3.5
+ - cmake
+ - r-essentials
+ - rstudio>=1.1.456
+ - r-rgl
+ - pandas
+ - numpy
+ - scipy
+ - scikit-learn
+ - jupyter
+ - jupyterlab
+ - gsl
+ - tzlocal
+ - simplegeneric
+ - natsort
+ - h5py
+ - tqdm
+ - patsy
+ - llvmlite
+ - numba
+ - networkx
+ - joblib
+ - numexpr
+ - pytables
+ - seaborn
+ - statsmodels
+ - python-igraph
+ - louvain
+ - r-rngtools
+ - bioconductor-rhdf5lib
+ - pip
+ - pip:
+   - MulticoreTSNE
+   - anndata==0.6.21
+   - fa2
+   - gprofiler-official
+   - scanpy==1.4.3
+   - rpy2
+   - git+https://github.com/flying-sheep/anndata2ri
+   

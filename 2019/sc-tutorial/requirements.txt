@@ -1,0 +1,9 @@
+louvain
+python-igraph==0.7.1.post4
+MulticoreTSNE
+anndata==0.6.21
+fa2
+gprofiler-official
+scanpy==1.4.3
+rpy2
+git+https://github.com/flying-sheep/anndata2ri
