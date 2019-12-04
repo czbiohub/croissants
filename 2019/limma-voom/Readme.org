@@ -1,0 +1,425 @@
+#+TITLE: limma-voom tutorial
+#+AUTHOR: Jack Kamm
+#+PROPERTY: header-args:R :session :results output
+
+* Differential expression analysis
+
+- Find differences in gene expression between 2 or more conditions
+- Popular packages on R/Bioconductor: 
+  - DESeq2
+  - edgeR
+  - limma-voom
+
+* limma-voom
+
+- =limma=: R package for differential expression with microarray data
+  - Smyth, "Limma: linear models for microarray data" (2005)
+- =limma-voom=: Extends =limma= to work on RNAseq data
+  - Law et al, "voom: precision weights unlock linear model analysis
+    tools for RNA-seq read counts" (2014)
+
+* Comparison
+
+#+begin_quote
+All models are wrong, but some are useful. -- George Box
+#+end_quote
+
+** DESeq2, edgeR
+
+- "More correct" model
+  - Directly models the gene counts as integers
+  - Generalized Linear Model (GLM)
+- Slower
+  - Quadratic in sample size 
+  - Not recommended for 100+ samples
+- Fixed effects only
+  - Bad for samples with repeated measurements
+
+** limma-voom
+
+- "More approximate" model
+  - Originally developed for continuous microarray intensities
+  - Normal approximation
+- Faster
+  - Linear in sample size
+  - Easily handles 100s of samples
+- Can include a random effect
+  - Good for samples with repeated measurements
+
+* Repeated measurements: Fixed vs Random Effects
+
+Suppose we have 10 subjects, and want to compare them Before/After
+treatment.
+
+Our model needs to include:
+- Effect of treatment
+- Subject-specific baseline
+  - Compare modeling this as a "Fixed" or "Random" effect
+
+** Fixed Effect
+
+- Each subject-specific baseline is an additional parameter
+- This adds *10 parameters* to our model
+- But we only have *20 samples*
+
+The large number of parameters (relative to samples) may harm
+statistical power, or cause numerical instability.
+
+** Random Effect
+
+- Treat the subject-specific baseline as a *Bayesian* random variable
+- Adds *2 parameters* to model (mean and variance of prior distribution)
+
+More statistical and numerically tractable.
+
+Comment: The Bayesian approach can be viewed as a type of
+*regularization*. (See also: the curse of dimensionality)
+
+* Example
+
+We'll go through an abbreivated version of the following vignette:
+[[https://www.bioconductor.org/packages/devel/workflows/vignettes/RNAseq123/inst/doc/limmaWorkflow.html][RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR]]
+
+If time permits, we'll also show to treat one of the covariates as a
+random effect.
+
+* Installation from Bioconductor
+
+First, make sure R is installed.
+
+Install the packages we need from Bioconductor:
+
+#+begin_src R
+  # Only needed if this is your first time using bioconductor
+  if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+
+  BiocManager::install(c("limma", "edgeR", "Glimma", "Mus.musculus"))
+#+end_src
+
+* Load R libraries
+
+#+begin_src R :results silent
+  library(limma)
+  library(Glimma)
+  library(edgeR)
+  library(Mus.musculus)
+#+end_src
+
+* Download data
+
+Download data from this link:
+https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE63310&format=file
+
+Untar and unzip the files:
+
+#+begin_src sh
+  tar -xvf ~/Downloads/GSE63310_RAW.tar
+  ls *.gz | xargs -I % gunzip %
+#+end_src
+
+* Read data
+
+=limma= uses the same data format as =edgeR=, a =DGEList=. Basically,
+this is a list with a counts matrix, sample metadata, gene metadata,
+etc.
+
+The function =readDGE()= provides a convenient way to read a list of
+counts files into a =DGEList= object:
+
+#+begin_src R :results silent
+  files <- c("GSM1545535_10_6_5_11.txt", "GSM1545536_9_6_5_11.txt",
+     "GSM1545538_purep53.txt", "GSM1545539_JMS8-2.txt",
+     "GSM1545540_JMS8-3.txt", "GSM1545541_JMS8-4.txt",
+     "GSM1545542_JMS8-5.txt", "GSM1545544_JMS9-P7c.txt",
+     "GSM1545545_JMS9-P8c.txt")
+  x <- readDGE(files, columns=c(1,3))
+#+end_src
+
+* Add metadata
+
+We'll add some manually constructed variables to the metadata table
+=x$samples=.
+
+#+begin_src R
+  samplenames <- substring(colnames(x), 12, nchar(colnames(x)))
+  samplenames
+#+end_src
+
+#+RESULTS:
+: 
+: [1] "10_6_5_11" "9_6_5_11"  "purep53"   "JMS8-2"    "JMS8-3"    "JMS8-4"   
+: [7] "JMS8-5"    "JMS9-P7c"  "JMS9-P8c"
+
+#+begin_src R :results value :colnames yes :rownames yes
+  colnames(x) <- samplenames
+  group <- as.factor(c("LP", "ML", "Basal", "Basal", "ML", "LP", 
+                       "Basal", "ML", "LP"))
+  x$samples$group <- group
+  lane <- as.factor(rep(c("L004","L006","L008"), c(3,4,2)))
+  x$samples$lane <- lane
+  x$samples
+#+end_src
+
+#+RESULTS:
+|           | files                    | group | lib.size | norm.factors | lane |
+|-----------+--------------------------+-------+----------+--------------+------|
+| 10_6_5_11 | GSM1545535_10_6_5_11.txt | LP    | 32863052 |            1 | L004 |
+| 9_6_5_11  | GSM1545536_9_6_5_11.txt  | ML    | 35335491 |            1 | L004 |
+| purep53   | GSM1545538_purep53.txt   | Basal | 57160817 |            1 | L004 |
+| JMS8-2    | GSM1545539_JMS8-2.txt    | Basal | 51368625 |            1 | L006 |
+| JMS8-3    | GSM1545540_JMS8-3.txt    | ML    | 75795034 |            1 | L006 |
+| JMS8-4    | GSM1545541_JMS8-4.txt    | LP    | 60517657 |            1 | L006 |
+| JMS8-5    | GSM1545542_JMS8-5.txt    | Basal | 55086324 |            1 | L006 |
+| JMS9-P7c  | GSM1545544_JMS9-P7c.txt  | ML    | 21311068 |            1 | L008 |
+| JMS9-P8c  | GSM1545545_JMS9-P8c.txt  | LP    | 19958838 |            1 | L008 |
+
+* Add gene annotations
+
+The vignette uses the =Mus.musculus= R package to add gene
+annotations. Another good tool for this is the =biomaRt= package.
+
+#+begin_src R
+  geneid <- rownames(x)
+  genes <- select(Mus.musculus, keys=geneid, columns=c("SYMBOL", "TXCHROM"), 
+                  keytype="ENTREZID")
+  head(genes)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+'select()' returned 1:many mapping between keys and columns
+
+   ENTREZID  SYMBOL TXCHROM
+1    497097    Xkr4    chr1
+2 100503874 Gm19938    <NA>
+3 100038431 Gm10568    <NA>
+4     19888     Rp1    chr1
+5     20671   Sox17    chr1
+6     27395  Mrpl15    chr1
+#+end_example
+
+Remove duplicated gene IDs (due to discrepancies in different databases)
+
+#+begin_src R
+  genes <- genes[!duplicated(genes$ENTREZID),]
+  x$genes <- genes
+#+end_src
+
+#+RESULTS:
+
+* Filter genes with low expression
+
+=filterByExpr()= is an =edgeR= function for removing genes with low
+expression, and low statistical power for our comparison(s) of
+interest.
+
+In this example, it filtered the gene set from 27,179 to 16,624.
+
+#+begin_src R
+  dim(x)
+  keep.exprs <- filterByExpr(x, group=group)
+  x <- x[keep.exprs,, keep.lib.sizes=FALSE]
+  dim(x)
+#+end_src
+
+#+RESULTS:
+: [1] 27179     9
+: 
+: [1] 16624     9
+
+* Normalize for sequencing depth
+
+The =calcNormFactors()= computes and attaches normalization factors to
+account for different sequencing depth between samples. These
+normalization factors are then used in downstream analyses.
+
+#+begin_src R
+  x <- calcNormFactors(x, method = "TMM")
+#+end_src
+
+#+RESULTS:
+
+* Visualization and unsupervised clustering
+
+The =Glimma= R package provides a nice interactive MDS plot for
+visualizing and exploring the data.
+
+#+begin_src R
+  # log counts-per-million
+  lcpm <- cpm(x, log=TRUE)
+  glMDSPlot(lcpm, groups=x$samples)
+#+end_src
+
+In this case, we can see that the first two Dimensions separate the
+"group" variable.
+
+* Set up Design matrix and contrasts
+** Design matrix
+
+We model the gene expression as depending on the =group= and =lane=.
+
+#+begin_src R
+  design <- model.matrix(~0+group+lane)
+  colnames(design) <- gsub("group", "", colnames(design))
+  design
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+  Basal LP ML laneL006 laneL008
+1     0  1  0        0        0
+2     0  0  1        0        0
+3     1  0  0        0        0
+4     1  0  0        1        0
+5     0  0  1        1        0
+6     0  1  0        1        0
+7     1  0  0        1        0
+8     0  0  1        0        1
+9     0  1  0        0        1
+attr(,"assign")
+[1] 1 1 1 2 2
+attr(,"contrasts")
+attr(,"contrasts")$group
+[1] "contr.treatment"
+
+attr(,"contrasts")$lane
+[1] "contr.treatment"
+#+end_example
+
+** Contrasts
+
+We'll also be interested in asking specific subquestions, such as: "Is
+group Basal significantly different than group LP on this gene"?
+
+To address these sub-questions, we'll set up /contrasts/ for pairwise
+comparisons.
+
+#+begin_src R
+  contr.matrix <- makeContrasts(
+     BasalvsLP = Basal-LP, 
+     BasalvsML = Basal - ML, 
+     LPvsML = LP - ML, 
+     levels = colnames(design))
+  contr.matrix
+#+end_src
+
+#+RESULTS:
+:           Contrasts
+: Levels     BasalvsLP BasalvsML LPvsML
+:   Basal            1         1      0
+:   LP              -1         0      1
+:   ML               0        -1     -1
+:   laneL006         0         0      0
+:   laneL008         0         0      0
+
+* voom: Correct for mean-variance trend
+
+Standard linear regression assumes that the errors all have the same
+variance. This doesn't hold for log-CPM values: variance is higher for
+genes with lower mean expression.
+
+Luckily, standard linear regression can be slightly modified to
+correctly handle non-constant variance, by using /weighted/ linear
+regression.
+
+The =voom()= functions calculates the weights need for the linear
+model. It can also display a plot of the mean-variance relationship.
+
+#+begin_src R
+  v <- voom(x, design=design, plot=TRUE)
+#+end_src
+
+* Fit the model
+
+- =lmFit()= fits the linear model
+- =contrasts.fit()= computes the estimated coefficients and standard
+  errors for a set of contrasts.
+- =eBayes()= computes p-values using empirical Bayes methods to
+  estimate the residual variances.
+
+#+begin_src R :async yes
+  vfit <- lmFit(v, design)
+  vfit <- contrasts.fit(vfit, contrasts=contr.matrix)
+  efit <- eBayes(vfit)
+#+end_src
+
+#+RESULTS:
+
+=plotSA= plots the mean-variance trend of the final model. It should
+be roughly flat.
+
+#+begin_src R
+  plotSA(efit, main="Final model: Mean-variance trend")
+#+end_src
+
+* Get significant genes
+
+#+begin_src R :results value :colnames yes :rownames yes
+  dt <- decideTests(efit)
+  summary(dt)
+#+end_src
+
+#+RESULTS:
+|        | BasalvsLP | BasalvsML | LPvsML |
+|--------+-----------+-----------+--------|
+| Down   |      4648 |      4927 |   3135 |
+| NotSig |      7113 |      7026 |  10972 |
+| Up     |      4863 |      4671 |   2517 |
+
+* Interactive mean-difference plot
+
+MD plot of second contrast (BasalvsML):
+
+#+begin_src R
+  glMDPlot(efit[,2], status=dt[,2])
+#+end_src
+
+* Other useful plots
+
+See the full vignette for examples of how to create these additional
+useful plots:
+
+- Boxplots log-expression per sample
+- Volcano plot
+- Heat maps
+- Venn diagram of significant genes
+
+* Example with a random effect
+
+To conclude, I'll show how to treat the =lane= variable as a random
+effect.
+
+Note: This is for illustration purposes only. Random effects are
+mainly useful when we have a large number of effects to fit (e.g.,
+when having a large number of paired samples)
+
+#+begin_src R
+  # treat group as fixed effect, lane as random effect
+  design2 <- model.matrix(~group)
+  # first-pass voom estimate, without random effect
+  voom1 <- voom(x, design2, plot=FALSE)
+  # use duplicateCorrelation() to create the random effect for lane
+  dupcor <- duplicateCorrelation(voom1, design2, block=x$samples$lane)
+
+  # second-pass voom, using the estimated random effect
+  voom2 = voom(x, design2, plot=FALSE, block=x$samples$lane,
+               correlation=dupcor$consensus)
+
+  # re-estimate the random effect
+  dupcor <- duplicateCorrelation(voom2, design2, block=x$samples$lane)
+
+  # fit the model using lmFit and eBayes
+  vfit <- lmFit(voom2, design2, block=x$samples$lane, correlation=dupcor$consensus)
+  efit <- eBayes(vfit)
+
+  # as before, compute significant genes with decideTests(), and
+  # visualize them with glMDPlot
+  dt <- decideTests(efit)
+  summary(dt)
+
+  glMDPlot(efit, status=dt)
+#+end_src
+
